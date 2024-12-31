@@ -1,0 +1,43 @@
+impôt sur le revenu à deux tranches:
+  non applicable si: personne . revenu <= 10000 €/an
+  valeur:
+    # Publicodes possède un mécanisme dédié pour ce cas de figure.
+    barème:
+      assiette: personne . revenu
+      tranches:
+        - taux: taux 1
+          plafond: seuil
+        - taux: taux 2
+  avec:
+    seuil:
+      titre: Seuil de la première tranche
+      valeur: 100000 €/an
+
+    taux 1: 
+      titre: Taux de la première tranche
+      valeur: 20%
+
+    taux 2:
+      titre: Taux de la deuxième tranche
+      valeur: 40%
+
+  note: >
+    ## Article 4
+
+
+    Le montant de l’impôt pour le calcul à deux tranches est égal au montant
+    de l’impôt de chaque tranche, multiplié par le taux de chaque tranche.
+
+
+    ### Article 5
+
+
+    Pour les individus dont le revenu est supérieur à 100 000€, l’impôt sur
+    le revenu de l’article 1 est de 40% du revenu au-delà de 100 000€.
+    En dessous de 100 000€, l’impôt sur le revenu est de 20% du revenu.
+
+
+    ### article 6
+
+    Les personnes ayant moins de 10 000€ de revenus sont exemptés de l’impôt
+    sur le revenu prévu à l’article 1.

@@ -1,0 +1,36 @@
+impôt sur le revenu:
+  description: >
+    ## Article 1
+
+
+    L’impôt sur le revenu d’un individu est calculé en tant qu’un
+    pourcentage fixe sur les revenus d’une personne pour une année.
+  valeur: personne . revenu * pourcentage fixe
+  unité: €/an
+
+pourcentage fixe:
+  titre: Taux d'imposition
+  description: >
+    ## Article 2
+
+
+    Le pourcentage fixe mentionné à l’article 1 est égal à 20%.
+  valeur: 20%
+
+pourcentage fixe . si deux enfants:
+  titre: Taux d'imposition pour les familles nombreuses
+  description: >
+    ## Article 3
+
+
+     Si l’individu a à sa charge deux ou plus enfants, alors
+     le pourcentage fixe mentionné à l’article 1 vaut 15 %.
+     applicable si: personne . nombre d'enfants >= 2
+  # Si la règle est applicable, alors elle remplace la règle `pourcentage fixe`.
+  remplace:
+    références à: pourcentage fixe
+  valeur: 15%
+  note: >
+    Contrairement à la version de Catala, si plusieurs règles remplaçant
+    `pourcentage fixe` sont applicables, alors un ordre de priorité implicite 
+    est défini (voir [la documentation](https://publi.codes/docs/manuel/principe-de-base#ordre-de-priorit%C3%A9)).

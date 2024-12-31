@@ -1,4 +1,4 @@
-# Tutoriel Catala
+# Impôt fictif sur le revenu
 
 Reprise de l'exemple fictif du [tutoriel de
 Catala](https://catala-lang.org/fr/examples/tutoriel) qui définit un impôt sur
@@ -8,292 +8,28 @@ le revenu. La version du programme Catala est disponible dans le fichier
 Cet impôt sur le revenu est définit à travers différents articles de loi,
 chacun d’eux étant introduit par un en-tête. Le premier commence ici :
 
-### Article 1
-
-L’impôt sur le revenu d’un individu est calculé en tant qu’un pourcentage fixe
-sur les revenus d’une personne pour une année.
-
-## Définir un impôt fictif sur le revenu
-
-Le contenu de l’article 1 utilise beaucoup d’éléments contextuels implicites :
-il existe une personne avec un revenu et en même temps un impôt sur le revenu,
-qu’une personne doit acquitter chaque année. Même si ce contexte implicite n’est
-pas inscrit en tant que tel dans la loi, nous devons l’expliciter pour le
-traduire en code. Concrètement, nous avons besoin d’une section « métadonnées »
-qui définit la forme et les types de données contenues dans la loi.
-
-Commençons notre section métadonnée en déclarant l’information sur le type
-« personne », c’est à dire le contribuable qui sera le sujet du calcul de
-l’impôt. Cette personne a un revenu et un nombre d’enfants, qui sont des
-pièces d’information qui seront nécessaires pour les objectifs fiscaux :
-
-```catala-metadata
-déclaration structure Personne:
-  # Le nom de la structure « Personne », doit commencer
-  # par une lettre majuscule: c'est la convention « CamelCase ».
-  donnée revenu contenu argent
-  # A cette ligne, « revenu » est le nom du champ de la structure et
-  # « argent » est le type de données de ce champ.
-  # On peut utiliser d’autres types comme : entier, décimal,
-  # argent, date, durée ou tout autre structure ou énumération
-  # que vous aurez déclaré
-  donnée nombre_enfants contenu entier
-  # « revenu » et « nombre_enfants » commencent par une lettre minuscule,
-  # ils adhèrent à la convention « snake_case ».
-```
-
-Cette structure contient deux champs de données, « revenu » et
-« nombre_enfants ». Les structures sont utiles pour regrouper des données qui
-vont ensemble. Typiquement, vous aurez une structure pour une entité concrète
-sur laquelle s’applique la loi (comme une personne). C’est à vous de décider
-comment regrouper les données, mais vous devrez viser à optimiser la lisibilité
-du code.
-
-Parfois, la loi donne une énumération de différentes situations. Ces énumérations
-sont modélisées en Catala par le type énumération, comme suit :
-
-```catala-metadata
-déclaration énumération CréditImpôt:
-# Le nom "CréditImpôt" s’écrit aussi en « CamelCase »
--- AucunCréditImpôt
-# Cette ligne indique que « CréditImpôt » peut être
-# en situation « AucunCréditImpôt »
--- CréditImpôtEnfants contenu entier
-# Cette ligne indique, de manière alternative, que « CréditImpôt » peut aussi
-# être une situation « CréditImpôtEnfants ». Cette situation porte un contenu
-# de type entier qui correspond au nombre d’enfants concernés par le crédit
-# d’impôt. Cela signifie que si vous êtes dans la situation 
-# « CréditImpôtEnfants », vous aurez aussi accès à ce nombre d’enfants.
-```
-
-En informatique, une telle énumération est appelée « type somme » ou simplement
-énumération. La combinaison de structures et d’énumération permet au programmeur
-Catala de déclarer toutes les formes possibles de données, car cette combinaison
-est équivalente à la puissante notion de « types de données algébriques ».
-
-Nous avons défini et typé les données que le programme va manipuler. Maintenant,
-nous devons définir un contexte logique dans lequel ces données vont évoluer.
-On effectue cela par la notion de « champ d’application » en Catala.
-Les champs d’application sont proches des fonctions en termes de programmation
-traditionnelle. Les champs d’application doivent avoir été déclarés
-préalablement dans les métadonnées, de la manière suivante:
-
-```catala-metadata
-déclaration champ d'application CalculImpôtRevenu:
-  # Les champs d’application utilisent le CamelCase
-  entrée personne contenu Personne
-  # Cette ligne déclare un élémént de contexte du champ d'application,
-  # cela ressemble à un paramètre de fonction en informatique. C'est la
-  # donnée sur laquelle le champ d'application va intervenir
-  interne pourcentage_fixe contenu décimal
-  résultat impôt_revenu contenu argent
-```
-
-Le champ d'application est l’unité d’abstraction de base dans des programmes
-Catala, et la déclaration du champ d’application est semblable à une signature
-de fonction : elle contient une liste de tous les paramètres ainsi que leurs
-types. Mais dans Catala, les variables d’un champ d’application représentent
-trois choses: paramètres d’entrées, paramètres locaux et paramètres de
-résultats. La différence entre les trois catégories peuvent être spécifiées par
-les différents attributs d’entrée/résultat qui précèdent les noms de variables.
-« entrée » signifie que la variable doit être définie seulement quand le champ
-d’application « CalculImpôtRevenu » est appelé.
-« interne » signifie que la variable ne peut pas être vue en dehors du champ
-d’application : elle n’est ni une entrée, ni un résultat du champ d’application.
-« résultat » signifie qu’un appel au champ d’application peut récupérer la
-valeur calculée de la variable. Notez qu’une variable peut aussi être
-simultanément une entrée et un résultat du champ d’application, dans ce cas
-elle devrait être annotée avec "entrée résultat".
-
-Nous avons maintenant tout ce dont nous avons besoin pour annoter le contenu
-de l’article 1 qui a été copié ci-dessous.
-
-### Article 1
+## Article 1
 
 L’impôt sur le revenu pour une personne est défini comme un pourcentage fixe
 des revenus de la personne pour une année.
 
-```catala
-champ d'application CalculImpôtRevenu:
-  définition impôt_revenu égal à
-    personne.revenu * pourcentage_fixe
-```
-
-Dans le code, nous définissons à l’intérieur de notre champ d’application
-le montant d’impôt sur le revenu selon la formule décrit dans l’article.
-Quand nous définissons des formules, vous avez accès à tous les opérateurs
-arithmétiques habituels : addition "+", soustraction "-", multiplication "\*"
-et division (barre oblique).
-
-Toutefois, dans le code Catala, ces opérateurs peuvent avoir un sens légèrement
-différent suivant les unités concernées. En effet, l’argent par exemple est
-arrondi au centime. Le compilateur Catala sélectionne automatiquement
-l’opération appropriée: ici, de l’argent est multiplié par un pourcentage (soit
-un nombre décimal), ce qui est une opération connue dont le résultat est une
-quantité d’argent, arrondie au centime. D’autres opérations sont rejetées, comme
-la multiplication de deux quantités d’argent entre elles, ou l’addition de deux
-dates.
-
-Revenons à l’article 1, dont une question reste sans réponse: quelle est la
-valeur du pourcentage fixe ? Souvent, des valeurs précises sont définies
-ailleurs dans les sources législatives. Ici, supposons que nous avons:
-
-### Article 2
+## Article 2
 
 Le pourcentage fixe mentionné à l’article 1 est égal à 20%.
 
-```catala
-champ d'application CalculImpôtRevenu:
-  définition pourcentage_fixe égal à 20%
-  # Ecrire 20% est juste une abbréviation pour « 0.20 »
-```
-
-Vous pouvez voir ici que Catala permet des définitions réparties dans toute
-l’annotation du texte législatif, afin que chaque définition soit le plus
-proche possible de sa localisation dans le texte.
-
-## Définitions conditionnelles
-
-Jusqu'à là tout va bien mais maintenant le texte législatif présente quelques
-difficultés. Supposons que le troisième article s’écrit :
-
-### Article 3
+## Article 3
 
 Si l’individu a à sa charge deux ou plus enfants, alors
 le pourcentage fixe mentionné à l’article 1 vaut 15 %.
 
-```catala
-# Comment redéfinir « pourcentage_fixe » ?
-```
-
-Cet article donne en réalité une autre définition pour le pourcentage fixe,
-préalablement défini à l’article 2. De plus, l’article 3 définit le pourcentage
-de manière conditionnelle pour la personne ayant plus de deux enfants.
-Catala permet de redéfinir précisément une variable sous une condition :
-
-```catala
-champ d'application CalculImpôtRevenu:
-  définition pourcentage_fixe sous condition
-    personne.nombre_enfants >= 2
-  conséquence égal à 15%
-  # Ecrire 15% est juste une abbréviation pour « 0.15 »
-```
-
-Même si les définitions conditionelles sont un outil puissant et expressif,
-une document juridique correctement rédigé doit toujours garantir qu’une seule
-condition au maximum soit vraie à tout moment. De cette façon, quand le
-programme Catala va s’exécuter, la juste définition sera choisie dynamiquement
-en déterminant quelle condition est vraie, selon le contexte.
-
-Ici, nous pouvons détecter un conflit sur `pourcentage_fixe` entre la
-définition générale et celle ci-dessus avec plus de ceux enfants. Catala
-donnera une erreur à l'exécution si nous essayons d'utiliser ces définitions
-de `pourcentage_fixe` avec plus de deux enfants ; les deux définitions
-contradictoires sont valables en même temps.
-
-Dans des situations comme celle-ci, Catala vous permettra de définir un ordre
-des priorité sur les conditions, qui devra être justifié par un raisonnement
-juridique. Mais nous verrons comment faire cela plus tard.
-
-## Règles
-
-Jusqu’à présent, vous avez appris comment déclarer un champ d’application avec
-quelques variables, et donner des définitions à ces variables dispersées à
-travers le texte de la loi, à des endroits pertinents. Mais il y a un modèle
-très fréquent dans des textes législatifs : qu’en est-il des conditions ? Une
-condition est une valeur qui peut être soit vraie ou fausse, comme un booléen
-en programmation. Cependant, la loi suppose implicitement qu’une condition est
-fausse, sauf indication contraire. Ce modèle est si commun en droit que Catala
-lui donne une syntaxe spéciale. Plus précisément, il nomme la définition
-de conditions des « règles », ce qui coïncide avec le sens habituel que les gens
-lui donneraient.
-
-Voici un exemple de condition qui pourrait survenir dans la loi:
-
 ### Article 3 bis
 
-Les enfants éligiblent à l’application de l’article 3.
-
-```catala
-# Pour traiter l’égibilité des enfants,
-# nous créons un nouveau champ d’application.
-déclaration champ d'application Enfant:
-  entrée âge contenu entier
-  # L’âge de l’enfant peut être déclarée comme ci-dessus.
-  résultat éligible_à_article_3 condition
-  # Nous déclarons l’éligibilité en utilisant le mot-clé spécial « condition »
-  # qui représente le contenu de la variable.
-
-champ d'application Enfant:
-  règle éligible_à_article_3 sous condition âge < 18 conséquence rempli
-  # Au moment de définir la valeur d’une condition à vraie, nous utilisons
-  # la syntaxe spéciale « règle » au lieu de « définition ». Les règles fixent
-  # les conditions à « rempli » ou à « non rempli » par des tests conditionnels.
-```
-
-Lors de l’interaction avec d’autres éléments du code, les valeurs
-des conditions se comportent comme des valeurs booléennes.
-
-## Fonctions
-
-Catala vous permet de définir des fonctions partout dans vos données. En effet,
-Catala est un langage de programmation fonctionnel et encourage, en utilisant
-des fonctions, à décrire les relations entre les données. Voici à quoi
-cela ressemble, dans la définition des métadonnées, lorsque nous voulons
-définir un calcul de l’impôt sur le revenu à deux tranches :
-
-```catala-metadata
-déclaration structure DeuxTranches:
-  donnée seuil contenu argent
-  donnée taux1 contenu décimal
-  donnée taux2 contenu décimal
-# Cette structure décrit les paramètres d’un calcul de la formule de l’impôt qui
-# possède deux tranches d’impôts, chacune avec leur propre taux d’imposition.
-
-déclaration champ d'application CalculImpôtDeuxTranches :
-  entrée tranches contenu DeuxTranches
-  # Cette variable d’entrée contient la description des paramètres
-  # de la formule d’imposition.
-  résultat formule_imposition contenu argent
-    dépend de revenu contenu argent
-  # Mais en déclarant la variable « formule_imposition », nous la déclarons
-  # comme une fonction : « contenu argent dépend de » signifie qu’une fonction
-  # retourne de « l’argent » en résultat (l’impôt) et prend de « l’argent » en
-  # entrée (le revenu).
-```
-
-Et dans le code :
+Seul les enfants mineurs sont élligibles pour l’application de l’article 3.
 
 ### Article 4
 
 Le montant de l’impôt pour le calcul à deux tranches est égal au montant
 de l’impôt de chaque tranche, multiplié par le taux de chaque tranche.
-
-```catala
-champ d'application CalculImpôtDeuxTranches :
-  définition formule_imposition de revenu égal à
-  # Le paramètre de type « argent », de la fonction « formule_imposition »,
-  # est « revenu ». Le nom du paramètre peut-être ce que vous voulez, et cela
-  # n’impactera pas les autres parties du code en dehors de la définition.
-  # Vous pouvez choisir un autre nom pour le paramètre, lors de sa définition,
-  # de la fonction « formule_imposition ».
-    si revenu <= tranches.seuil alors
-      revenu * tranches.taux1
-    sinon (
-      tranches.seuil * tranches.taux1 +
-      (revenu - tranches.seuil) * tranches.taux2
-    )
-    # C’est cette formule pour implémenter un système à deux tranches.
-```
-
-## Inclusion d’un champ d'application
-
-Maintenant que nous avons défini notre champ d'application utilitaire pour
-calculer un impôt à deux tranches, nous voulons l’utiliser dans notre champ
-d’application principal du calcul de l’impôt. Comme mentionné précédement, le
-champ d'application de Catala peut être aussi pensé comme de grandes fonctions.
-Et ces grandes fonctions peuvent s’appeler entre elles, c’est ce que nous allons
-voir dans l’article ci-dessous.
 
 ### Article 5
 
@@ -301,61 +37,10 @@ Pour les individus dont le revenu est supérieur à 100 000€, l’impôt sur
 le revenu de l’article 1 est de 40% du revenu au-delà de 100 000€.
 En dessous de 100 000€, l’impôt sur le revenu est de 20% du revenu.
 
-```catala
-déclaration champ d'application NouveauCalculImpôtRevenu:
-  deux_tranches champ d'application CalculImpôtDeuxTranches
-  # Cette ligne indique que nous ajoutons l’élément « deux_tranches »
-  # au contexte. Toutefois, le mot-clé « champ d'application » indique
-  # que l’élément n’est pas une donnée mais plutôt un sous-champ d'application,
-  # qui peut être utilisé pour calculer des choses.
-  entrée personne contenu Personne
-  résultat impôt_revenu contenu argent
-
-champ d'application NouveauCalculImpôtRevenu :
-  # Puisque le sous-champ d’application « deux_tranches » est une grande
-  # fonction que nous pouvons appelé, nous avons besoin de définir ses
-  # paramètres. Ceci est fait ci-dessous :
-  définition deux_tranches.tranches égal à DeuxTranches {
-    -- seuil: 100 000€
-    -- taux1: 20%
-    -- taux2: 40%
-  }
-  # En définissant la variable d’entrée « tranches », du sous-champ
-  # d’application « deux_tranches », nous avons changé la manière dont
-  # le sous-champ d’application s’éxécutera. Le sous-champ d'application
-  # s’éxécutera avec toutes les valeurs définies par l’appelant, puis calculera
-  # la valeur de ses autres variables.
-
-  définition impôt_revenu égal à
-    deux_tranches.formule_imposition de personne.revenu
-  # Après que le sous-champ d'application ait été éxécuté, vous pouvez en
-  # récupérer les résultats. Ci-dessus, vous récupérez les résultats de la
-  # variable « formule_imposition » calculée par le sous-champ d’application
-  # « deux_tranches ». C’est à vous de choisir ce qui est une entrée et un
-  # résultat de votre sous-champ d'application ; si vous faites un choix
-  # incohérent, le compilateur Catala vous en avertira.
-```
-
-Maintenant que vous avez réussi de définir le calcul d’impôt sur le revenu,
-le législateur vient inévitablement pérturber nos belles et irréprochables
-formules pour rajouter un cas particulier ! L’article ci-dessous est un
-modèle très fréquent dans les lois, et allez voir comment Catala le gère.
-
 ### Article 6
 
 Les personnes ayant moins de 10 000€ de revenus sont exemptés de l’impôt
 sur le revenu prévu à l’article 1.
-
-```catala
-champ d'application NouveauCalculImpôtRevenu:
-  # Ici, nous définissons simplement une nouvelle définition conditionnelle
-  # pour « l’impôt sur le revenu », qui manipule le cas particulier.
-  définition impôt_revenu sous condition
-    personne.revenu <= 10 000€
-  conséquence égal à 0€
-  # Quoi ? Pensez-vous que quelque chose peut-être faux avec ceci ?
-  # Hmmm… Nous verrons cela plus tard !
-```
 
 Et voilà ! Nous avons défini un calcul d’impôt à deux tranches en annotant
 tout simplement un texte législatif par des bouts de code Catala.

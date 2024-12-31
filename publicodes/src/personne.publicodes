@@ -1,0 +1,22 @@
+personne:
+  titre: Contribuable sujet du calcul
+
+personne . revenu:
+  titre: Revenu imposable
+  # Permet de définir un paramètre du modèle (càd, une entrée du programme).
+  question: Quel est votre revenu imposable ?
+  par défaut: 1000 €/an
+  unité: €/an
+
+personne . nombre d'enfants:
+  titre: Nombre d'enfants à charge
+  question: Combien d'enfants à charge avez-vous ?
+  par défaut: 0
+  unité: enfant
+  description: >
+    Les enfants à charge sont les enfants mineurs ou majeurs rattachés au
+    foyer fiscal.
+  note: >
+    Ici, contrairement à la version de Catala, comme Publicodes ne supporte
+    pas encore les listes, il n'est pas possible de définir une liste
+    arbitraire d'enfant et de filtrer uniquement celleux qui sont à charge.
