@@ -1,0 +1,17 @@
+base amende:
+  titre: Calcul de la base qui détermine l'imposition de l'amende
+  valeur: 
+    variations:
+      - si: personne . revenu <= 10000€/an
+        alors: 500€
+      - sinon: impôt sur le revenu à deux tranches
+  description: >
+    ## Article 7 - (Base amende)
+
+
+    Le système de justice inflige des amendes aux individus quand ils
+    commettent une infraction. Les amendes sont déterminées en fonction du
+    montant des impôts payés par le particulier. Plus l’individu paie d’impôts,
+    plus l’amende est élevée. Toutefois la détermination du montant de l’impôt
+    à payer par un particulier, dans ce contexte, comprend des frais
+    d’imposition fixes de 500€ pour les particuliers gagnant moins de 10 000€.

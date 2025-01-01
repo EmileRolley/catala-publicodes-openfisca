@@ -1,5 +1,8 @@
 impôt sur le revenu à deux tranches:
-  non applicable si: personne . revenu <= 10000 €/an
+  non applicable si: 
+    une de ces conditions:
+      - personne . revenu <= 10000 €/an
+      - personne . nombre d'enfants >= 7
   valeur:
     # Publicodes possède un mécanisme dédié pour ce cas de figure.
     barème:
@@ -41,3 +44,8 @@ impôt sur le revenu à deux tranches:
 
     Les personnes ayant moins de 10 000€ de revenus sont exemptés de l’impôt
     sur le revenu prévu à l’article 1.
+
+    #### Article 6 bis
+
+    Des personnes avec 7 enfants ou plus sont exonérées de l’impôt sur le
+    revenu mentionné à l’article 1.

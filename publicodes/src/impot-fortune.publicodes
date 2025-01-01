@@ -1,0 +1,21 @@
+patrimoine soumis à l'IFI:
+  valeur: total du patrimoine - valeur bâtiment caritatif
+  plafond: 2500000€
+  unité: €
+  description: >
+    ## Article 8
+
+
+    Fiscalement parlant, la valeur du bâtiment exploité à des fins caritatives
+    peut être déduite du patrimoine d’une personne, qui est alors plafonné à 2
+    500 000€.
+  avec:
+    valeur bâtiment caritatif:
+      titre: Valeur du bâtiment exploité à des fins caritatives
+      par défaut: 0€
+
+    total du patrimoine:
+      titre: Total du patrimoine
+      par défaut: 0€
+
+

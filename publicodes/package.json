@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "compile": "publicodes compile",
-    "test": "yarn compile && vitest"
+    "test": "yarn compile && vitest --run"
   },
   "peerDependencies": {
     "publicodes": "^1.5.1"
